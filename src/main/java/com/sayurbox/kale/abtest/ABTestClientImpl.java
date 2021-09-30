@@ -2,11 +2,12 @@ package com.sayurbox.kale.abtest;
 
 import com.sayurbox.kale.config.KaleConfig;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
+import com.google.gson.JsonArray;
+
 import com.sayurbox.kale.abtest.client.GetUniverseAllocationResponse;
 import com.sayurbox.kale.abtest.command.GetAllUniverseAllocationsCommand;
 import com.sayurbox.kale.abtest.command.GetUniverseAllocationCommand;
@@ -37,14 +38,14 @@ public class ABTestClientImpl implements ABTestClient {
     }
 
     @Override
-    public List<JsonObject> getAllUniverseAllocations(String userId) {
+    public JsonArray getAllUniverseAllocations(String userId) {
         GetAllUniverseAllocationsCommand cmd = new GetAllUniverseAllocationsCommand(this.kaleConfig.getHystrixParams(),
                 this.httpClient, this.kaleConfig.getBaseUrl(),
                 userId);
     
         List<GetUniverseAllocationResponse> response = cmd.execute();
 
-        List<JsonObject> jsons = new ArrayList<JsonObject>();
+        JsonArray jsons = new JsonArray();
         for (GetUniverseAllocationResponse res : response) {
             JsonObject json = constructABTestJson(res);
             jsons.add(json);
@@ -55,6 +56,7 @@ public class ABTestClientImpl implements ABTestClient {
 
     private JsonObject constructABTestJson(GetUniverseAllocationResponse response) {
         JsonObject json = new JsonObject();
+        json.addProperty("universeId", response.getUniverseId());
         json.addProperty("experimentId", response.getExperimentId());
         json.add("configs", gson.toJsonTree(response.getConfigs()));
         return json;
