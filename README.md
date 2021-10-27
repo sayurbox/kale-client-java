@@ -1,4 +1,7 @@
 # Kale-client-java
+[![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=sayurbox_kale-client-java&metric=alert_status)](https://sonarcloud.io/summary/new_code?id=sayurbox_kale-client-java)
+[![Coverage](https://sonarcloud.io/api/project_badges/measure?project=sayurbox_kale-client-java&metric=coverage)](https://sonarcloud.io/summary/new_code?id=sayurbox_kale-client-java)
+
 Java client library to call kale API
 
 ## Usage
