@@ -19,6 +19,7 @@ public class FeatureFlagClientImpl implements FeatureFlagClient {
         GetAllocateCommand cmd = new GetAllocateCommand(this.kaleConfig.getHystrixParams(),
                 this.httpClient, this.kaleConfig.getBaseUrl(),
                 userId, featureId);
+        System.out.println("just a test");
         return cmd.execute().getRollout();
     }
 }
