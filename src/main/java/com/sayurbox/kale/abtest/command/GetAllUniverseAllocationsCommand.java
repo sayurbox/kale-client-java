@@ -12,8 +12,7 @@ import okhttp3.Request;
 import okhttp3.RequestBody;
 import okhttp3.Response;
 
-import java.io.UnsupportedEncodingException;
-import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 public class GetAllUniverseAllocationsCommand extends KaleCommand<List<GetUniverseAllocationResponse>> {
@@ -31,12 +30,11 @@ public class GetAllUniverseAllocationsCommand extends KaleCommand<List<GetUniver
 
     @Override
     public List<GetUniverseAllocationResponse> getFallback() {
-        List<GetUniverseAllocationResponse> response = new ArrayList<GetUniverseAllocationResponse>();
-        return response;
+        return Collections.emptyList();
     }
 
     @Override
-    protected Request createRequest() throws UnsupportedEncodingException {
+    protected Request createRequest() {
         String url = String.format("%s/v1/abtest/allocation/%s",
                 baseUrl, userId);
         return new Request.Builder().post(RequestBody.create(null, new byte[]{})).url(url).build();
