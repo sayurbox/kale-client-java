@@ -5,9 +5,11 @@ import com.sayurbox.kale.config.KaleConfig;
 
 import com.sayurbox.kale.abtest.ABTestClient;
 import com.sayurbox.kale.abtest.ABTestClientImpl;
+import lombok.extern.slf4j.Slf4j;
 
 import java.util.List;
 
+@Slf4j
 public class KaleABTestTest {
 
     public void abTestTest(){
@@ -27,8 +29,7 @@ public class KaleABTestTest {
         List<GetUniverseAllocationResponse> allUniverseAllocations = abTest.getAllUniverseAllocations(
                 "qFA88l70U4RxscuJZFUwEZpHUUUF"
         );
-        System.out.println(universeAllocation);
-        System.out.printf("Universe: %s Experiment: %s Variant: %s Configs: %s User: %s\n",
+        log.info("Universe: {} Experiment: {} Variant: {} Configs: {} User: {}\n",
                 universeAllocation.getUniverseId(),
                 universeAllocation.getExperimentId(),
                 universeAllocation.getVariantId(),
@@ -36,9 +37,8 @@ public class KaleABTestTest {
                 universeAllocation.getUserId()
         );
 
-        System.out.println(allUniverseAllocations);
         for (GetUniverseAllocationResponse allocation : allUniverseAllocations) {
-            System.out.printf("\nUniverse: %s Experiment: %s Variant: %s Configs: %s User: %s",
+            log.info("\nUniverse: {} Experiment: {} Variant: {} Configs: {} User: {}",
                     allocation.getUniverseId(),
                     allocation.getExperimentId(),
                     allocation.getVariantId(),
