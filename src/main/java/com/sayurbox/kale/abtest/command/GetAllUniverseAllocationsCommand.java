@@ -19,6 +19,8 @@ public class GetAllUniverseAllocationsCommand extends KaleCommand<List<GetUniver
 
     private final String userId;
 
+    private static final String ENDPOINT = "%s/v1/abtest/allocation/%s";
+
     public GetAllUniverseAllocationsCommand(KaleHystrixParams hystrixParams,
         OkHttpClient okHttpClient,
         String baseUrl,
@@ -35,18 +37,19 @@ public class GetAllUniverseAllocationsCommand extends KaleCommand<List<GetUniver
 
     @Override
     protected Request createRequest() {
-        String url = String.format("%s/v1/abtest/allocation/%s",
-                baseUrl, userId);
+        String url = String.format(ENDPOINT, baseUrl, userId);
         return new Request.Builder().post(RequestBody.create(null, new byte[]{})).url(url).build();
     }
 
     protected List<GetUniverseAllocationResponse> handleResponse(Response response) throws Exception {
-        String body = response.body().string();
+        if (response.body() == null) {
+            throw new KaleException("Response body is null");
+        }
         if (!response.isSuccessful()) {
             throw new KaleException("Failed response from kale status: " +
                     response.code() + " body: " + response.body().string());
         }
-        DataResponse<List<GetUniverseAllocationResponse>> t = gson.fromJson(body,
+        DataResponse<List<GetUniverseAllocationResponse>> t = gson.fromJson(response.body().string(),
                new TypeToken<DataResponse<List<GetUniverseAllocationResponse>>>() {}.getType());
         return t.getData();
     }
