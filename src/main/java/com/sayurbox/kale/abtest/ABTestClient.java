@@ -1,11 +1,12 @@
 package com.sayurbox.kale.abtest;
 
-import com.google.gson.JsonArray;
-import com.google.gson.JsonObject;
+import com.sayurbox.kale.abtest.client.GetUniverseAllocationResponse;
+
+import java.util.List;
 
 public interface ABTestClient {
 
-    JsonArray getAllUniverseAllocations(String userId);
-    JsonObject getUniverseAllocation(String userId, String universeId);
+    List<GetUniverseAllocationResponse> getAllUniverseAllocations(String userId);
+    GetUniverseAllocationResponse getUniverseAllocation(String userId, String universeId);
 
 }
