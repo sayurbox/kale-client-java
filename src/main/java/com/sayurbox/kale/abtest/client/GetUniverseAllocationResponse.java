@@ -1,30 +1,36 @@
 package com.sayurbox.kale.abtest.client;
 
+import com.google.gson.annotations.SerializedName;
+
 import java.util.List;
 import java.util.Map;
 
 public class GetUniverseAllocationResponse {
 
-    private String user_id;
-    private String universe_id;
-    private String experiment_id;
-    private String variant_id;
+    @SerializedName("user_id")
+    private String userId;
+    @SerializedName("universe_id")
+    private String universeId;
+    @SerializedName("experiment_id")
+    private String experimentId;
+    @SerializedName("variant_id")
+    private String variantId;
     private List<Map<String, String>> configs;
 
-    public void setUserId(String user_id) {
-        this.user_id = user_id;
+    public void setUserId(String userId) {
+        this.userId = userId;
     }
 
-    public void setUniverseId(String universe_id) {
-        this.universe_id = universe_id;
+    public void setUniverseId(String universeId) {
+        this.universeId = universeId;
     }
 
-    public void setExperimentId(String experiment_id) {
-        this.experiment_id = experiment_id;
+    public void setExperimentId(String experimentId) {
+        this.experimentId = experimentId;
     }
 
-    public void setVariantId(String variant_id) {
-        this.variant_id = variant_id;
+    public void setVariantId(String variantId) {
+        this.variantId = variantId;
     }
 
     public void setConfigs(List<Map<String, String>> configs) {
@@ -32,19 +38,19 @@ public class GetUniverseAllocationResponse {
     }
 
     public String getUserId() {
-        return user_id;
+        return userId;
     }
 
     public String getUniverseId() {
-        return universe_id;
+        return universeId;
     }
-    
+
     public String getExperimentId() {
-        return experiment_id;
+        return experimentId;
     }
 
     public String getVariantId() {
-        return variant_id;
+        return variantId;
     }
 
     public List<Map<String, String>> getConfigs() {
