@@ -42,14 +42,12 @@ public class GetUniverseAllocationCommand extends KaleCommand<GetUniverseAllocat
     }
 
     protected GetUniverseAllocationResponse handleResponse(Response response) throws Exception {
-        if (response.body() == null) {
-            throw new KaleException("Response body is null");
-        }
+        String body = response.body().string();
         if (!response.isSuccessful()) {
             throw new KaleException("Failed response from kale status: " +
-                    response.code() + " body: " + response.body().string());
+                    response.code() + " body: " + body);
         }
-        DataResponse<GetUniverseAllocationResponse> t = gson.fromJson(response.body().string(),
+        DataResponse<GetUniverseAllocationResponse> t = gson.fromJson(body,
                 new TypeToken<DataResponse<GetUniverseAllocationResponse>>() {}.getType());
         return t.getData();
     }
