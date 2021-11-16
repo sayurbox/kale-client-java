@@ -5,12 +5,14 @@ import com.sayurbox.kale.config.KaleConfig;
 
 import com.sayurbox.kale.abtest.ABTestClient;
 import com.sayurbox.kale.abtest.ABTestClientImpl;
-import lombok.extern.slf4j.Slf4j;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.List;
 
-@Slf4j
 public class KaleABTestTest {
+
+    private static final Logger logger = LoggerFactory.getLogger(KaleABTestTest.class);
 
     public void abTestTest(){
         KaleConfig config = new KaleConfig.Builder()
@@ -29,7 +31,7 @@ public class KaleABTestTest {
         List<GetUniverseAllocationResponse> allUniverseAllocations = abTest.getAllUniverseAllocations(
                 "qFA88l70U4RxscuJZFUwEZpHUUUF"
         );
-        log.info("Universe: {} Experiment: {} Variant: {} Configs: {} User: {}\n",
+        logger.info("Universe: {} Experiment: {} Variant: {} Configs: {} User: {}\n",
                 universeAllocation.getUniverseId(),
                 universeAllocation.getExperimentId(),
                 universeAllocation.getVariantId(),
@@ -38,7 +40,7 @@ public class KaleABTestTest {
         );
 
         for (GetUniverseAllocationResponse allocation : allUniverseAllocations) {
-            log.info("\nUniverse: {} Experiment: {} Variant: {} Configs: {} User: {}",
+            logger.info("\nUniverse: {} Experiment: {} Variant: {} Configs: {} User: {}",
                     allocation.getUniverseId(),
                     allocation.getExperimentId(),
                     allocation.getVariantId(),
