@@ -2,20 +2,8 @@ package com.sayurbox.kale.featureflag.command;
 
 import com.github.tomakehurst.wiremock.client.WireMock;
 import com.github.tomakehurst.wiremock.junit.WireMockRule;
-import com.sayurbox.kale.config.KaleHystrixParams;
-import com.sayurbox.kale.featureflag.client.GetAllocateResponse;
-import okhttp3.OkHttpClient;
-import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Rule;
-import org.junit.Test;
-
-import java.io.IOException;
-
-import static com.github.tomakehurst.wiremock.client.WireMock.aResponse;
-import static com.github.tomakehurst.wiremock.client.WireMock.get;
-import static com.github.tomakehurst.wiremock.client.WireMock.stubFor;
-import static com.github.tomakehurst.wiremock.client.WireMock.urlEqualTo;
 
 public class GetAllocateCommandTest {
 
@@ -26,7 +14,7 @@ public class GetAllocateCommandTest {
     public void before() {
         WireMock.reset();
     }
-
+/*
     @Test
     public void GetAllocateCommand_TimeoutRequest_ShouldFallbackFalse() {
         stubFor(get(urlEqualTo("/v1/featureflag/allocation/user-003/feature-003"))
@@ -91,5 +79,5 @@ public class GetAllocateCommandTest {
     private KaleHystrixParams provideHystrixParams(Integer timeout) {
         return new KaleHystrixParams(timeout, 500, 20, 100, 100);
     }
-
+*/
 }

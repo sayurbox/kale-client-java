@@ -5,6 +5,7 @@ import com.netflix.hystrix.HystrixCommandGroupKey;
 public class KaleHystrixParams {
 
     private final Integer executionTimeout;
+    private final boolean circuitBreakerEnabled;
     private final Integer circuitBreakerSleepWindow;
     private final Integer circuitBreakerRequestVolumeThreshold;
     private final Integer metricRollingStatisticalWindow;
@@ -16,6 +17,7 @@ public class KaleHystrixParams {
                              Integer metricRollingStatisticalWindow,
                              Integer metricsHealthSnapshotInterval) {
         this.executionTimeout = executionTimeout;
+        this.circuitBreakerEnabled = true;
         this.circuitBreakerSleepWindow = circuitBreakerSleepWindow;
         this.circuitBreakerRequestVolumeThreshold = circuitBreakerRequestVolumeThreshold;
         this.metricRollingStatisticalWindow = metricRollingStatisticalWindow;
@@ -40,6 +42,10 @@ public class KaleHystrixParams {
 
     public Integer getMetricsHealthSnapshotInterval() {
         return metricsHealthSnapshotInterval;
+    }
+
+    public boolean isCircuitBreakerEnabled() {
+        return circuitBreakerEnabled;
     }
 
     public HystrixCommandGroupKey getHystrixCommandGroupKey() {

@@ -5,16 +5,27 @@ import static java.util.Objects.requireNonNull;
 public class KaleConfig {
 
     private final String baseUrl;
-
     private final KaleHystrixParams hystrixParams;
+    private final CircuitBreakerParams circuitBreakerParams;
 
     public KaleConfig(String baseUrl, KaleHystrixParams hystrixParams) {
         this.baseUrl = requireNonNull(baseUrl);
         this.hystrixParams = hystrixParams;
+        this.circuitBreakerParams = null;
+    }
+
+    public KaleConfig(String baseUrl, CircuitBreakerParams circuitBreakerParams) {
+        this.baseUrl = requireNonNull(baseUrl);
+        this.hystrixParams = null;
+        this.circuitBreakerParams = circuitBreakerParams;
     }
 
     public KaleHystrixParams getHystrixParams() {
         return hystrixParams;
+    }
+
+    public CircuitBreakerParams getCircuitBreakerParams() {
+        return circuitBreakerParams;
     }
 
     public String getBaseUrl() {
