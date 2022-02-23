@@ -11,21 +11,22 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
-import java.util.Arrays;
+import java.util.Collections;
 import java.util.function.Supplier;
 
-public abstract class ClientCommand<T> {
+// Helper for http client wrapped by circuit breaker
+public abstract class ApiClientCommand<T> {
 
-    private static final Logger logger = LoggerFactory.getLogger(ClientCommand.class);
+    private static final Logger logger = LoggerFactory.getLogger(ApiClientCommand.class);
 
     private final OkHttpClient okHttpClient;
     private final CircuitBreaker circuitBreaker;
     private final boolean isCircuitBreakerEnabled;
     protected final Gson gson;
 
-    protected ClientCommand(CircuitBreaker circuitBreaker,
-                            OkHttpClient okHttpClient,
-                            boolean isCircuitBreakerEnabled) {
+    protected ApiClientCommand(CircuitBreaker circuitBreaker,
+                               OkHttpClient okHttpClient,
+                               boolean isCircuitBreakerEnabled) {
         this.okHttpClient = okHttpClient;
         this.circuitBreaker = circuitBreaker;
         this.isCircuitBreakerEnabled = isCircuitBreakerEnabled;
@@ -51,18 +52,19 @@ public abstract class ClientCommand<T> {
     }
 
     public T execute() {
+        // ref code examples:
+        // https://github.com/thombergs/code-examples/blob/master/resilience4j/timelimiter/src/main/java/io/reflectoring/resilience4j/timelimiter/Examples.java
         Supplier<T> supplier = this::run;
+        if (!this.isCircuitBreakerEnabled) {
+            return supplier.get();
+        }
         Decorators.DecorateSupplier<T> decorated = Decorators
                 .ofSupplier(supplier)
                 .withCircuitBreaker(this.circuitBreaker)
-                .withFallback(Arrays.asList(CallNotPermittedException.class),
-                        e -> getFallback());
-
-        if (this.isCircuitBreakerEnabled) {
-            System.out.println("enabled>>");
-            //decorated.withCircuitBreaker(this.circuitBreaker);
-        }
-
+                .withFallback(Collections.singletonList(CallNotPermittedException.class), e -> {
+                    logger.warn("execute fallback CallNotPermittedException");
+                    return getFallback();
+                });
         Supplier<T> decorator = decorated.decorate();
         return decorator.get();
     }
@@ -72,4 +74,5 @@ public abstract class ClientCommand<T> {
     protected abstract T handleResponse(Response response) throws IOException;
 
     protected abstract Request createRequest();
+
 }

@@ -2,7 +2,7 @@ package com.sayurbox.kale.featureflag.command;
 
 import com.google.gson.reflect.TypeToken;
 import com.sayurbox.kale.common.client.DataResponse;
-import com.sayurbox.kale.common.command.ClientCommand;
+import com.sayurbox.kale.common.command.ApiClientCommand;
 import com.sayurbox.kale.featureflag.client.GetAllocateResponse;
 import io.github.resilience4j.circuitbreaker.CircuitBreaker;
 import okhttp3.OkHttpClient;
@@ -13,7 +13,7 @@ import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 
-public class GetAllocateCommand extends ClientCommand<GetAllocateResponse> {
+public class GetAllocateCommand extends ApiClientCommand<GetAllocateResponse> {
 
     private static final Logger logger = LoggerFactory.getLogger(GetAllocateCommand.class);
 
@@ -51,9 +51,9 @@ public class GetAllocateCommand extends ClientCommand<GetAllocateResponse> {
         String body = response.body().string();
         if (!response.isSuccessful()) {
             System.out.println("Failed response from kale status: " +
-                    response.code() + " body: " + response.body().string());
+                    response.code() + " body: " + body);
             logger.error("Failed response from kale status: " +
-                    response.code() + " body: " + response.body().string());
+                    response.code() + " body: " + body);
             return getFallback();
         }
         DataResponse<GetAllocateResponse> t = this.gson.fromJson(body,

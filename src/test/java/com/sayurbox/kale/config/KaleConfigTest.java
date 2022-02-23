@@ -8,15 +8,17 @@ public class KaleConfigTest {
     @Test
     public void kaleConfig() {
         KaleConfig.Builder builder = new KaleConfig.Builder().withBaseUrl("http://localhost:90");
-        builder.withHystrixExecutionTimeout(500);
-        builder.withHystrixCircuitBreakerRequestVolumeThreshold(40);
-        builder.withHystrixCircuitBreakerSleepWindow(250);
-        builder.withHystrixCircuitBreakerRequestVolumeThreshold(70);
-        builder.withHystrixRollingStatisticalWindow(700);
-        builder.withHystrixHealthSnapshotInterval(140);
+        builder.withLoggerEnabled(true);
+        builder.withExecutionTimeout(1000);
+        builder.withCircuitBreakerEnabled(true);
+        builder.withCircuitBreakerFailureVolumeThreshold(5);
+        builder.withCircuitBreakerSlowResponseThreshold(500);
+        builder.withCircuitBreakerWaitDurationOpenState(15000);
         KaleConfig cfg = builder.build();
         Assert.assertEquals("http://localhost:90", cfg.getBaseUrl());
-        Assert.assertNotNull(cfg.getHystrixParams());
+        Assert.assertTrue(cfg.isLogEnabled());
+        Assert.assertEquals(1000L, cfg.getExecutionTimeout().longValue());
+        Assert.assertNotNull(cfg.getCircuitBreakerParams());
     }
 
 }
