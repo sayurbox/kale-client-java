@@ -37,12 +37,11 @@ public abstract class ApiClientCommand<T> {
         Response response = null;
         try {
             Request request = createRequest();
-            logger.info("requesting kale: " + request.url());
+            logger.info("requesting kale: {}", request.url());
             response = okHttpClient.newCall(request).execute();
             return handleResponse(response);
         } catch (IOException e) {
             logger.error("failed request from kale, ", e);
-            System.out.println("failed request from kale, "+ e.getMessage());
             return getFallback();
         } finally {
             if (response != null && response.body() != null) {

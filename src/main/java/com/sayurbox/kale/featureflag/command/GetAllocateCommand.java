@@ -50,16 +50,11 @@ public class GetAllocateCommand extends ApiClientCommand<GetAllocateResponse> {
     protected GetAllocateResponse handleResponse(Response response) throws IOException {
         String body = response.body().string();
         if (!response.isSuccessful()) {
-            System.out.println("Failed response from kale status: " +
-                    response.code() + " body: " + body);
-            logger.error("Failed response from kale status: " +
-                    response.code() + " body: " + body);
+            logger.error("Failed response from kale status: {} body: {}", response.code(), body);
             return getFallback();
         }
         DataResponse<GetAllocateResponse> t = this.gson.fromJson(body,
                new TypeToken<DataResponse<GetAllocateResponse>>() {}.getType());
-        System.out.println("OK response from kale status: " +
-                response.code() + " body: " + t);
         return t.getData();
     }
 }
