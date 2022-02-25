@@ -1,17 +1,16 @@
 package com.sayurbox.kale.abtest.command;
 
 import com.google.gson.reflect.TypeToken;
+import com.sayurbox.kale.abtest.client.GetUniverseAllocationResponse;
 import com.sayurbox.kale.common.client.DataResponse;
 import com.sayurbox.kale.common.command.KaleCommand;
-import com.sayurbox.kale.config.KaleHystrixParams;
-import com.sayurbox.kale.exception.KaleException;
-import com.sayurbox.kale.abtest.client.GetUniverseAllocationResponse;
-
+import io.github.resilience4j.circuitbreaker.CircuitBreaker;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.RequestBody;
 import okhttp3.Response;
 
+import java.io.IOException;
 import java.util.Collections;
 import java.util.List;
 
@@ -21,12 +20,14 @@ public class GetAllUniverseAllocationsCommand extends KaleCommand<List<GetUniver
 
     private static final String ENDPOINT = "%s/v1/abtest/allocation/%s";
 
-    public GetAllUniverseAllocationsCommand(KaleHystrixParams hystrixParams,
-        OkHttpClient okHttpClient,
-        String baseUrl,
-        String userId
+    public GetAllUniverseAllocationsCommand(
+            CircuitBreaker circuitBreaker,
+            OkHttpClient okHttpClient,
+            boolean isCircuitBreakerEnabled,
+            String baseUrl,
+            String userId
     ) {
-        super(hystrixParams, okHttpClient, baseUrl);
+        super(circuitBreaker, okHttpClient, isCircuitBreakerEnabled, baseUrl);
         this.userId = userId;
     }
 
@@ -41,11 +42,10 @@ public class GetAllUniverseAllocationsCommand extends KaleCommand<List<GetUniver
         return new Request.Builder().post(RequestBody.create(null, new byte[]{})).url(url).build();
     }
 
-    protected List<GetUniverseAllocationResponse> handleResponse(Response response) throws Exception {
+    protected List<GetUniverseAllocationResponse> handleResponse(Response response) throws IOException {
         String body = response.body().string();
         if (!response.isSuccessful()) {
-            throw new KaleException("Failed response from kale status: " +
-                    response.code() + " body: " + body);
+            return getFallback();
         }
         DataResponse<List<GetUniverseAllocationResponse>> t = gson.fromJson(body,
                new TypeToken<DataResponse<List<GetUniverseAllocationResponse>>>() {}.getType());

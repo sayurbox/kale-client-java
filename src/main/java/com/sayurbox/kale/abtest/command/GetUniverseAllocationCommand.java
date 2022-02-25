@@ -1,15 +1,16 @@
 package com.sayurbox.kale.abtest.command;
 
 import com.google.gson.reflect.TypeToken;
+import com.sayurbox.kale.abtest.client.GetUniverseAllocationResponse;
 import com.sayurbox.kale.common.client.DataResponse;
 import com.sayurbox.kale.common.command.KaleCommand;
-import com.sayurbox.kale.config.KaleHystrixParams;
-import com.sayurbox.kale.exception.KaleException;
-import com.sayurbox.kale.abtest.client.GetUniverseAllocationResponse;
+import io.github.resilience4j.circuitbreaker.CircuitBreaker;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.RequestBody;
 import okhttp3.Response;
+
+import java.io.IOException;
 
 public class GetUniverseAllocationCommand extends KaleCommand<GetUniverseAllocationResponse> {
 
@@ -19,13 +20,14 @@ public class GetUniverseAllocationCommand extends KaleCommand<GetUniverseAllocat
     private static final String ENDPOINT = "%s/v1/abtest/allocation/%s/%s";
 
     public GetUniverseAllocationCommand(
-        KaleHystrixParams hystrixParams,
-        OkHttpClient okHttpClient,
-        String baseUrl,
-        String userId,
-        String universeId
+            CircuitBreaker circuitBreaker,
+            OkHttpClient okHttpClient,
+            boolean isCircuitBreakerEnabled,
+            String baseUrl,
+            String userId,
+            String universeId
     ) {
-        super(hystrixParams, okHttpClient, baseUrl);
+        super(circuitBreaker, okHttpClient, isCircuitBreakerEnabled, baseUrl);
         this.userId = userId;
         this.universeId = universeId;
     }
@@ -41,11 +43,10 @@ public class GetUniverseAllocationCommand extends KaleCommand<GetUniverseAllocat
         return new Request.Builder().post(RequestBody.create(null, new byte[]{})).url(url).build();
     }
 
-    protected GetUniverseAllocationResponse handleResponse(Response response) throws Exception {
+    protected GetUniverseAllocationResponse handleResponse(Response response) throws IOException {
         String body = response.body().string();
         if (!response.isSuccessful()) {
-            throw new KaleException("Failed response from kale status: " +
-                    response.code() + " body: " + body);
+            return getFallback();
         }
         DataResponse<GetUniverseAllocationResponse> t = gson.fromJson(body,
                 new TypeToken<DataResponse<GetUniverseAllocationResponse>>() {}.getType());

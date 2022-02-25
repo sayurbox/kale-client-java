@@ -2,7 +2,7 @@ package com.sayurbox.kale.featureflag.command;
 
 import com.google.gson.reflect.TypeToken;
 import com.sayurbox.kale.common.client.DataResponse;
-import com.sayurbox.kale.common.command.ApiClientCommand;
+import com.sayurbox.kale.common.command.KaleCommand;
 import com.sayurbox.kale.featureflag.client.GetAllocateResponse;
 import io.github.resilience4j.circuitbreaker.CircuitBreaker;
 import okhttp3.OkHttpClient;
@@ -13,7 +13,7 @@ import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 
-public class GetAllocateCommand extends ApiClientCommand<GetAllocateResponse> {
+public class GetAllocateCommand extends KaleCommand<GetAllocateResponse> {
 
     private static final Logger logger = LoggerFactory.getLogger(GetAllocateCommand.class);
 
@@ -27,7 +27,7 @@ public class GetAllocateCommand extends ApiClientCommand<GetAllocateResponse> {
                               String baseUrl,
                               String userId,
                               String featureId) {
-        super(circuitBreaker, okHttpClient, isCircuitBreakerEnabled);
+        super(circuitBreaker, okHttpClient, isCircuitBreakerEnabled, baseUrl);
         this.userId = userId;
         this.featureId = featureId;
         this.baseUrl = baseUrl;

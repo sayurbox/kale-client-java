@@ -26,7 +26,7 @@ dependencies {
 }
 ```
 
-## Example
+## FeatureFlag Example
 
 ```java
 KaleConfig config = new KaleConfig.Builder()
@@ -52,6 +52,36 @@ if (isAllocate) {
     System.out.println("user is allocated");
 } else {
     System.out.println("user is not allocated");
+}
+
+```
+
+## AB-Test Example
+
+```java
+// Init config same as feature-flag
+ABTestClient abTest = new ABTestClientImpl(config);
+
+GetUniverseAllocationResponse universeAllocation = abTest.getUniverseAllocation(
+        "qFA88l70U4RxscuJZFUwEZpHUUUF", "0b95519c-1b32-47fe-aa8c-55cb65d6f8c4");
+
+List<GetUniverseAllocationResponse> allUniverseAllocations = abTest.getAllUniverseAllocations(
+        "qFA88l70U4RxscuJZFUwEZpHUUUF");
+
+logger.info("Universe: {} Experiment: {} Variant: {} Configs: {} User: {}\n",
+        universeAllocation.getUniverseId(),
+        universeAllocation.getExperimentId(),
+        universeAllocation.getVariantId(),
+        universeAllocation.getConfigs(),
+        universeAllocation.getUserId());
+
+for (GetUniverseAllocationResponse allocation : allUniverseAllocations) {
+        logger.info("\nUniverse: {} Experiment: {} Variant: {} Configs: {} User: {}",
+            allocation.getUniverseId(),
+            allocation.getExperimentId(),
+            allocation.getVariantId(),
+            allocation.getConfigs(),
+            allocation.getUserId());
 }
 
 ```
