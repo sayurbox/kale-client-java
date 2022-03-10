@@ -1,10 +1,9 @@
 package com.sayurbox.kale;
 
-import com.sayurbox.kale.abtest.client.GetUniverseAllocationResponse;
-import com.sayurbox.kale.config.KaleConfig;
-
 import com.sayurbox.kale.abtest.ABTestClient;
 import com.sayurbox.kale.abtest.ABTestClientImpl;
+import com.sayurbox.kale.abtest.client.GetUniverseAllocationResponse;
+import com.sayurbox.kale.config.KaleConfig;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -16,12 +15,13 @@ public class KaleABTestTest {
 
     public void abTestTest(){
         KaleConfig config = new KaleConfig.Builder()
-                .withBaseUrl("https://kale-api-consumer-dev-ina.apps.aws.sayurbox.io") // required & mandatory
-                .withHystrixExecutionTimeout(5000)  // optional (default is 5000ms)
-                .withHystrixCircuitBreakerSleepWindow(500) // optional
-                .withHystrixCircuitBreakerRequestVolumeThreshold(10)  // optional
-                .withHystrixRollingStatisticalWindow(500) // optional
-                .withHystrixHealthSnapshotInterval(500) // optional
+                .withBaseUrl("https://kale-api.sayurbox.co.id") // required & mandatory
+                .withLoggerEnabled(true)
+                .withExecutionTimeout(1000)
+                .withCircuitBreakerEnabled(true)
+                .withCircuitBreakerFailureVolumeThreshold(5)
+                .withCircuitBreakerSlowResponseThreshold(200)
+                .withCircuitBreakerWaitDurationOpenState(5_000)
                 .build();
         ABTestClient abTest = new ABTestClientImpl(config);
 

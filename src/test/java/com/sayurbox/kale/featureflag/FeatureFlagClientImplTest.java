@@ -23,7 +23,9 @@ public class FeatureFlagClientImplTest {
     @Before
     public void before() {
         WireMock.reset();
-        KaleConfig cfg = new KaleConfig.Builder().withBaseUrl("http://localhost:9494")
+        KaleConfig cfg = new KaleConfig.Builder()
+                .withBaseUrl("http://localhost:9494")
+                .withLoggerEnabled(true)
                 .build();
         featureFlagClient = new FeatureFlagClientImpl(cfg);
     }

@@ -3,15 +3,24 @@ package com.sayurbox.kale.abtest.command;
 import com.github.tomakehurst.wiremock.client.WireMock;
 import com.github.tomakehurst.wiremock.junit.WireMockRule;
 import com.sayurbox.kale.abtest.client.GetUniverseAllocationResponse;
-import com.sayurbox.kale.config.KaleHystrixParams;
+import io.github.resilience4j.circuitbreaker.CircuitBreaker;
+import io.github.resilience4j.circuitbreaker.CircuitBreakerConfig;
+import io.github.resilience4j.circuitbreaker.CircuitBreakerRegistry;
 import okhttp3.OkHttpClient;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 
-import static com.github.tomakehurst.wiremock.client.WireMock.*;
+import java.io.IOException;
+import java.time.Duration;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
+
 import static com.github.tomakehurst.wiremock.client.WireMock.aResponse;
+import static com.github.tomakehurst.wiremock.client.WireMock.post;
+import static com.github.tomakehurst.wiremock.client.WireMock.stubFor;
+import static com.github.tomakehurst.wiremock.client.WireMock.urlEqualTo;
 
 public class GetUniverseAllocationCommandTest {
 
@@ -35,8 +44,9 @@ public class GetUniverseAllocationCommandTest {
                         .withFixedDelay(5000)
                 ));
         GetUniverseAllocationCommand cmd = new GetUniverseAllocationCommand(
-                provideHystrixParams(500),
-                new OkHttpClient(),
+                provideCircuitBreaker(),
+                provideOkHttpClient(),
+                true,
                 "http://localhost:9393",
                 "user-003",
                 "universe-003"
@@ -55,8 +65,9 @@ public class GetUniverseAllocationCommandTest {
                         .withBody("{\"error\":{\"code\":1234,\"message\":\"invalid data\",\"type\":\"Error\"}}")
                 ));
         GetUniverseAllocationCommand cmd = new GetUniverseAllocationCommand(
-                provideHystrixParams(1_000),
-                new OkHttpClient(),
+                provideCircuitBreaker(),
+                provideOkHttpClient(),
+                true,
                 "http://localhost:9393",
                 "user-003",
                 "universe-003");
@@ -76,8 +87,9 @@ public class GetUniverseAllocationCommandTest {
                                 "\"configs\":[{\"key\":\"color\",\"value\":\"red\"}]}}")
                 ));
         GetUniverseAllocationCommand cmd = new GetUniverseAllocationCommand(
-                provideHystrixParams(1_000),
-                new OkHttpClient(),
+                provideCircuitBreaker(),
+                provideOkHttpClient(),
+                true,
                 "http://localhost:9393",
                 "user-003",
                 "universe-003"
@@ -91,14 +103,28 @@ public class GetUniverseAllocationCommandTest {
         Assert.assertEquals("red", actual.getConfigs().get(0).get("value"));
     }
 
-    private KaleHystrixParams provideHystrixParams(Integer timeout) {
-        return new KaleHystrixParams(
-                timeout,
-                500,
-                20,
-                100,
-                100
-        );
+    private CircuitBreaker provideCircuitBreaker() {
+        CircuitBreakerConfig circuitBreakerConfig = CircuitBreakerConfig.custom()
+                .slidingWindowType(CircuitBreakerConfig.SlidingWindowType.COUNT_BASED)
+                .slidingWindowSize(5)
+                .slowCallRateThreshold(70.0f)
+                .slowCallDurationThreshold(Duration.ofMillis(100))
+                .waitDurationInOpenState(Duration.ofSeconds(15))
+                .recordExceptions(IOException.class, TimeoutException.class)
+                .build();
+
+        CircuitBreakerRegistry circuitBreakerRegistry =
+                CircuitBreakerRegistry.of(circuitBreakerConfig);
+        return circuitBreakerRegistry
+                .circuitBreaker("abTest");
+    }
+
+    private OkHttpClient provideOkHttpClient() {
+        return new OkHttpClient.Builder()
+                .connectTimeout(1000, TimeUnit.MILLISECONDS)
+                .readTimeout(500, TimeUnit.MILLISECONDS)
+                .writeTimeout(500, TimeUnit.MILLISECONDS)
+                .build();
     }
 
 }
