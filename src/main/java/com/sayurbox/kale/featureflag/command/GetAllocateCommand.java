@@ -17,7 +17,6 @@ public class GetAllocateCommand extends KaleCommand<GetAllocateResponse> {
 
     private static final Logger logger = LoggerFactory.getLogger(GetAllocateCommand.class);
 
-    private final String baseUrl;
     private final String userId;
     private final String featureId;
 
@@ -30,7 +29,6 @@ public class GetAllocateCommand extends KaleCommand<GetAllocateResponse> {
         super(circuitBreaker, okHttpClient, isCircuitBreakerEnabled, baseUrl);
         this.userId = userId;
         this.featureId = featureId;
-        this.baseUrl = baseUrl;
     }
 
     @Override

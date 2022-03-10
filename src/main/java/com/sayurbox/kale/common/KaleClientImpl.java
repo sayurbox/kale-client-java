@@ -19,7 +19,7 @@ public abstract class KaleClientImpl {
     protected final OkHttpClient httpClient;
     protected final CircuitBreaker circuitBreaker;
 
-    public KaleClientImpl(String name, KaleConfig kaleConfig) {
+    protected KaleClientImpl(String name, KaleConfig kaleConfig) {
         this.kaleConfig = kaleConfig;
         CircuitBreakerParams circuitBreakerParams = kaleConfig.getCircuitBreakerParams();
         HttpLoggingInterceptor logging = new HttpLoggingInterceptor();
