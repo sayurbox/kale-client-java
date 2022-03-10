@@ -95,7 +95,7 @@ public class GetAllocateCommandTest {
     }
 
     @Test
-    public void GetAllocateCommand_CircuitBreakerClosed_ShouldFallbackFalse() {
+    public void GetAllocateCommand_CircuitBreakerOpen_ShouldFallbackFalse() {
         stubFor(get(urlEqualTo("/v1/featureflag/allocation/user-003/feature-003"))
                 .willReturn(aResponse()
                         .withStatus(200)
@@ -106,14 +106,20 @@ public class GetAllocateCommandTest {
         CircuitBreaker circuitBreaker = provideCircuitBreaker();
         OkHttpClient okHttpClient = provideOkHttpClient();
         boolean[] actualResults = new boolean[10];
-        boolean[] expectedResult = new boolean[] {true, true, true, true, true, false, false, false, false, false};
+        boolean[] expectedResult =
+                new boolean[] {true, true, true, true, true, false, false, false, false, false};
+        boolean[] actualCircuitClosed = new boolean[10];
+        boolean[] expectedCircuitClosed =
+                new boolean[] {true, true, true, true, false, false, false, false, false, false};
         for (int i = 0; i < 10; i++) {
             GetAllocateCommand cmd = new GetAllocateCommand(circuitBreaker, okHttpClient,
                     true, "http://localhost:9393", "user-003", "feature-003");
             GetAllocateResponse actual = cmd.execute();
             actualResults[i] = actual.getRollout();
+            actualCircuitClosed[i] = circuitBreaker.getState().equals(CircuitBreaker.State.CLOSED);
         }
         Assert.assertArrayEquals(expectedResult, actualResults);
+        Assert.assertArrayEquals(expectedCircuitClosed, actualCircuitClosed);
     }
 
     @Test
