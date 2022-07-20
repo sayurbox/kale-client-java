@@ -43,6 +43,18 @@ public class FeatureFlagClientImplTest {
     }
 
     @Test
+    public void isAllocateV2_True() {
+        stubFor(get(urlEqualTo("/v2/featureflag/allocation/user-003/feature-003"))
+                .willReturn(aResponse()
+                        .withStatus(200)
+                        .withHeader("Content-Type", "application/json")
+                        .withBody("{\"data\":{\"rollout\":true}}")
+                ));
+        boolean actual = featureFlagClient.isAllocateV2("feature-003", "user-003");
+        Assert.assertTrue(actual);
+    }
+
+    @Test
     public void isAllocate_False() {
         stubFor(get(urlEqualTo("/v1/featureflag/allocation/user-004/feature-004"))
                 .willReturn(aResponse()
@@ -55,6 +67,18 @@ public class FeatureFlagClientImplTest {
     }
 
     @Test
+    public void isAllocateV2_False() {
+        stubFor(get(urlEqualTo("/v2/featureflag/allocation/user-004/feature-004"))
+                .willReturn(aResponse()
+                        .withStatus(200)
+                        .withHeader("Content-Type", "application/json")
+                        .withBody("{\"data\":{\"rollout\":false}}")
+                ));
+        boolean actual = featureFlagClient.isAllocateV2("feature-004", "user-004");
+        Assert.assertFalse(actual);
+    }
+
+    @Test
     public void isAllocate_HasErrorResponse() {
         stubFor(get(urlEqualTo("/v1/featureflag/allocation/user-005/feature-005"))
                 .willReturn(aResponse()
@@ -63,6 +87,18 @@ public class FeatureFlagClientImplTest {
                         .withBody("{\"error\":{\"code\":1234,\"message\":\"just error\",\"type\":\"TestError\"}}")
                 ));
         boolean actual = featureFlagClient.isAllocate("feature-005", "user-005");
+        Assert.assertFalse(actual);
+    }
+
+    @Test
+    public void isAllocateV2_HasErrorResponse() {
+        stubFor(get(urlEqualTo("/v2/featureflag/allocation/user-005/feature-005"))
+                .willReturn(aResponse()
+                        .withStatus(400)
+                        .withHeader("Content-Type", "application/json")
+                        .withBody("{\"error\":{\"code\":1234,\"message\":\"just error\",\"type\":\"TestError\"}}")
+                ));
+        boolean actual = featureFlagClient.isAllocateV2("feature-005", "user-005");
         Assert.assertFalse(actual);
     }
 
