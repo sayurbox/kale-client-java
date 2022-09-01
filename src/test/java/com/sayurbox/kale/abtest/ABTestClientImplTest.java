@@ -4,11 +4,9 @@ import com.github.tomakehurst.wiremock.client.WireMock;
 import com.github.tomakehurst.wiremock.junit.WireMockRule;
 import com.sayurbox.kale.abtest.client.GetUniverseAllocationResponse;
 import com.sayurbox.kale.config.KaleConfig;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Rule;
-import org.junit.Test;
+import org.junit.*;
 
+import java.util.HashMap;
 import java.util.List;
 
 import static com.github.tomakehurst.wiremock.client.WireMock.*;
@@ -99,5 +97,35 @@ public class ABTestClientImplTest {
 
         Assert.assertNotNull(actual);
         Assert.assertEquals(0, actual.size());
+    }
+
+    @Ignore("Real test on staging")
+    @Test
+    public void getUniverseAllocationRealTest_Success() {
+        KaleConfig cfg = new KaleConfig.Builder().withBaseUrl("https://kale-api.sayurbox.tech")
+                .build();
+        abTestClient = new ABTestClientImpl(cfg);
+
+        HashMap<String, String> properties = new HashMap<>();
+        properties.put("wh_code", "JK_01");
+
+        List<GetUniverseAllocationResponse> allocationsResponse = abTestClient.getAllUniverseAllocations("user-003",properties);
+        Assert.assertNotEquals(0, allocationsResponse.size());
+
+        allocationsResponse.stream().filter(a -> a.getUniverseId().equals("cd6f7e9e-4abe-41c3-bd10-3afbd14afdb2")).forEach(a -> {
+            Assert.assertEquals("user-003", a.getUserId());
+            Assert.assertEquals("cd6f7e9e-4abe-41c3-bd10-3afbd14afdb2", a.getUniverseId());
+            Assert.assertEquals("f4f56090-5a1d-49d6-899b-1ce5178f7d5d", a.getExperimentId());
+        });
+
+        // Test without properties
+        allocationsResponse = abTestClient.getAllUniverseAllocations("user-003");
+        Assert.assertNotEquals(0, allocationsResponse.size());
+
+        allocationsResponse.stream().filter(a -> a.getUniverseId().equals("cd6f7e9e-4abe-41c3-bd10-3afbd14afdb2")).forEach(a -> {
+            Assert.assertEquals("user-003", a.getUserId());
+            Assert.assertEquals("cd6f7e9e-4abe-41c3-bd10-3afbd14afdb2", a.getUniverseId());
+            Assert.assertEquals("f4f56090-5a1d-49d6-899b-1ce5178f7d5d", a.getExperimentId());
+        });
     }
 }
