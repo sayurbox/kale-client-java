@@ -68,6 +68,7 @@ GetUniverseAllocationResponse universeAllocation = abTest.getUniverseAllocation(
 
 // Create properties map fo filtered experiments
 // This is optional, can be passed as the last parameter to getExperiments
+// Supported properties are defined in the Backend
 HashMap<String, String> properties = new HashMap<String, String>(1) {{
     put("wh_code", "JK01");
 }};
