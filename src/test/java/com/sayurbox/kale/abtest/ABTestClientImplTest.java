@@ -99,6 +99,60 @@ public class ABTestClientImplTest {
         Assert.assertEquals(0, actual.size());
     }
 
+
+    @Test
+    public void getUniverseAllocationWithProperties_Success() {
+        HashMap<String, String> properties = new HashMap<String, String>(1) {{
+            put("wh_code", "JK01");
+        }};
+
+        stubFor(post(urlEqualTo("/v1/abtest/allocation/user-003/universe-003"))
+                .withRequestBody(WireMock.equalToJson("{\"wh_code\":\"JK01\"}"))
+                .willReturn(aResponse()
+                        .withStatus(200)
+                        .withHeader("Content-Type", "application/json")
+                        .withBody("{\"data\":{\"user_id\":\"user-003\",\"universe_id\":\"universe-003\"," +
+                                "\"experiment_id\":\"experiment-003\",\"variant_id\":\"variant-003\"," +
+                                "\"configs\":[{\"key\":\"color\",\"value\":\"red\"}]}}")
+                ));
+        GetUniverseAllocationResponse actual = abTestClient.getUniverseAllocation(
+                "user-003", "universe-003", properties
+        );
+
+        Assert.assertEquals("user-003", actual.getUserId());
+        Assert.assertEquals("universe-003", actual.getUniverseId());
+        Assert.assertEquals("experiment-003", actual.getExperimentId());
+        Assert.assertEquals("variant-003", actual.getVariantId());
+        Assert.assertEquals("color", actual.getConfigs().get(0).get("key"));
+        Assert.assertEquals("red", actual.getConfigs().get(0).get("value"));
+    }
+
+    @Test
+    public void getAllUniverseAllocationsWithProperties_Success() {
+        HashMap<String, String> properties = new HashMap<String, String>(1) {{
+            put("wh_code", "JK01");
+        }};
+
+        stubFor(post(urlEqualTo("/v1/abtest/allocation/user-003"))
+                .withRequestBody(WireMock.equalToJson("{\"wh_code\":\"JK01\"}"))
+                .willReturn(aResponse()
+                        .withStatus(200)
+                        .withHeader("Content-Type", "application/json")
+                        .withBody("{\"data\":[{\"user_id\":\"user-003\",\"universe_id\":\"universe-003\"," +
+                                "\"experiment_id\":\"experiment-003\",\"variant_id\":\"variant-003\"," +
+                                "\"configs\":[{\"key\":\"color\",\"value\":\"red\"}]}]}")
+                ));
+        List<GetUniverseAllocationResponse> actual = abTestClient.getAllUniverseAllocations("user-003",properties);
+        GetUniverseAllocationResponse alloc = actual.get(0);
+
+        Assert.assertEquals("user-003", alloc.getUserId());
+        Assert.assertEquals("universe-003", alloc.getUniverseId());
+        Assert.assertEquals("experiment-003", alloc.getExperimentId());
+        Assert.assertEquals("variant-003", alloc.getVariantId());
+        Assert.assertEquals("color", alloc.getConfigs().get(0).get("key"));
+        Assert.assertEquals("red", alloc.getConfigs().get(0).get("value"));
+    }
+
     @Ignore("Real test on staging")
     @Test
     public void getUniverseAllocationRealTest_Success() {
