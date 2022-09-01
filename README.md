@@ -62,9 +62,21 @@ if (isAllocate) {
 // Init config same as feature-flag
 ABTestClient abTest = new ABTestClientImpl(config);
 
+// Get all experiments allocated to this users within the universe id
 GetUniverseAllocationResponse universeAllocation = abTest.getUniverseAllocation(
         "qFA88l70U4RxscuJZFUwEZpHUUUF", "0b95519c-1b32-47fe-aa8c-55cb65d6f8c4");
 
+// Create properties map fo filtered experiments
+// This is optional, can be passed as the last parameter to getExperiments
+HashMap<String, String> properties = new HashMap<String, String>(1) {{
+    put("wh_code", "JK01");
+}};
+
+// Get all experiments allocated to this users within the universe id
+        GetUniverseAllocationResponse universeAllocation = abTest.getUniverseAllocation(
+        "qFA88l70U4RxscuJZFUwEZpHUUUF", "0b95519c-1b32-47fe-aa8c-55cb65d6f8c4", properties);
+        
+// Get all experiments allocated to this users in all universe
 List<GetUniverseAllocationResponse> allUniverseAllocations = abTest.getAllUniverseAllocations(
         "qFA88l70U4RxscuJZFUwEZpHUUUF");
 
