@@ -8,7 +8,6 @@ import com.sayurbox.kale.config.KaleConfig;
 
 import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 public class ABTestClientImpl extends KaleClientImpl implements ABTestClient {
 

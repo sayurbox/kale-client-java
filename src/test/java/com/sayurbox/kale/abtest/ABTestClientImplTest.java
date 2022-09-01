@@ -102,7 +102,8 @@ public class ABTestClientImplTest {
     @Ignore("Real test on staging")
     @Test
     public void getUniverseAllocationRealTest_Success() {
-        KaleConfig cfg = new KaleConfig.Builder().withBaseUrl("https://kale-api.sayurbox.tech")
+        // TODO: change with staging endpoint
+        KaleConfig cfg = new KaleConfig.Builder().withBaseUrl("http://localhost:9494")
                 .build();
         abTestClient = new ABTestClientImpl(cfg);
 
