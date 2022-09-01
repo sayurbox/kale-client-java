@@ -6,8 +6,8 @@ import com.sayurbox.kale.abtest.command.GetUniverseAllocationCommand;
 import com.sayurbox.kale.common.KaleClientImpl;
 import com.sayurbox.kale.config.KaleConfig;
 
-import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class ABTestClientImpl extends KaleClientImpl implements ABTestClient {
 
@@ -34,7 +34,7 @@ public class ABTestClientImpl extends KaleClientImpl implements ABTestClient {
     }
 
     @Override
-    public List<GetUniverseAllocationResponse> getAllUniverseAllocations(String userId, HashMap<String, String> properties) {
+    public List<GetUniverseAllocationResponse> getAllUniverseAllocations(String userId, Map<String, String> properties) {
         GetAllUniverseAllocationsCommand cmd = new GetAllUniverseAllocationsCommand(this.circuitBreaker,
                 this.httpClient, this.kaleConfig.getCircuitBreakerParams().isEnabled(),
                 this.kaleConfig.getBaseUrl(),
@@ -43,7 +43,7 @@ public class ABTestClientImpl extends KaleClientImpl implements ABTestClient {
     }
 
     @Override
-    public GetUniverseAllocationResponse getUniverseAllocation(String userId, String universeId, HashMap<String, String> properties) {
+    public GetUniverseAllocationResponse getUniverseAllocation(String userId, String universeId, Map<String, String> properties) {
         GetUniverseAllocationCommand cmd = new GetUniverseAllocationCommand(this.circuitBreaker,
                 this.httpClient, this.kaleConfig.getCircuitBreakerParams().isEnabled(),
                 this.kaleConfig.getBaseUrl(),

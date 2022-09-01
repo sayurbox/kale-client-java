@@ -4,13 +4,19 @@ import com.github.tomakehurst.wiremock.client.WireMock;
 import com.github.tomakehurst.wiremock.junit.WireMockRule;
 import com.sayurbox.kale.abtest.client.GetUniverseAllocationResponse;
 import com.sayurbox.kale.config.KaleConfig;
-import org.junit.*;
+import org.junit.Assert;
+import org.junit.Before;
+import org.junit.Ignore;
+import org.junit.Rule;
+import org.junit.Test;
 
 import java.util.HashMap;
 import java.util.List;
 
-import static com.github.tomakehurst.wiremock.client.WireMock.*;
 import static com.github.tomakehurst.wiremock.client.WireMock.aResponse;
+import static com.github.tomakehurst.wiremock.client.WireMock.post;
+import static com.github.tomakehurst.wiremock.client.WireMock.stubFor;
+import static com.github.tomakehurst.wiremock.client.WireMock.urlEqualTo;
 
 public class ABTestClientImplTest {
 
@@ -142,7 +148,7 @@ public class ABTestClientImplTest {
                                 "\"experiment_id\":\"experiment-003\",\"variant_id\":\"variant-003\"," +
                                 "\"configs\":[{\"key\":\"color\",\"value\":\"red\"}]}]}")
                 ));
-        List<GetUniverseAllocationResponse> actual = abTestClient.getAllUniverseAllocations("user-003",properties);
+        List<GetUniverseAllocationResponse> actual = abTestClient.getAllUniverseAllocations("user-003", properties);
         GetUniverseAllocationResponse alloc = actual.get(0);
 
         Assert.assertEquals("user-003", alloc.getUserId());
@@ -164,7 +170,7 @@ public class ABTestClientImplTest {
         HashMap<String, String> properties = new HashMap<>();
         properties.put("wh_code", "JK_01");
 
-        List<GetUniverseAllocationResponse> allocationsResponse = abTestClient.getAllUniverseAllocations("user-003",properties);
+        List<GetUniverseAllocationResponse> allocationsResponse = abTestClient.getAllUniverseAllocations("user-003", properties);
         Assert.assertNotEquals(0, allocationsResponse.size());
 
         allocationsResponse.stream().filter(a -> a.getUniverseId().equals("cd6f7e9e-4abe-41c3-bd10-3afbd14afdb2")).forEach(a -> {
