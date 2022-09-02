@@ -1,5 +1,6 @@
 package com.sayurbox.kale.abtest.command;
 
+import com.github.tomakehurst.wiremock.client.MappingBuilder;
 import com.github.tomakehurst.wiremock.client.WireMock;
 import com.github.tomakehurst.wiremock.junit.WireMockRule;
 import com.sayurbox.kale.abtest.client.GetUniverseAllocationResponse;
@@ -14,6 +15,7 @@ import org.junit.Test;
 
 import java.io.IOException;
 import java.time.Duration;
+import java.util.HashMap;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
@@ -49,7 +51,8 @@ public class GetAllUniverseAllocationsCommandTest {
                 provideOkHttpClient(),
                 true,
                 "http://localhost:9393",
-                "user-003"
+                "user-003",
+                null
         );
         List<GetUniverseAllocationResponse> actual = cmd.execute();
 
@@ -70,7 +73,8 @@ public class GetAllUniverseAllocationsCommandTest {
                 provideOkHttpClient(),
                 true,
                 "http://localhost:9393",
-                "user-003"
+                "user-003",
+                null
         );
         List<GetUniverseAllocationResponse> actual = cmd.execute();
 
@@ -80,6 +84,41 @@ public class GetAllUniverseAllocationsCommandTest {
 
     @Test
     public void GetAllUniverseAllocationsCommand_Success() {
+        MappingBuilder mappingBuilder = post(urlEqualTo("/v1/abtest/allocation/user-003"))
+                .withRequestBody(WireMock.equalToJson("{\"wh_code\":\"JK01\"}"))
+                .willReturn(aResponse()
+                        .withStatus(200)
+                        .withHeader("Content-Type", "application/json")
+                        .withBody("{\"data\":[{\"user_id\":\"user-003\",\"universe_id\":\"universe-003\"," +
+                                "\"experiment_id\":\"experiment-003\",\"variant_id\":\"variant-003\"," +
+                                "\"configs\":[{\"key\":\"color\",\"value\":\"red\"}]}]}")
+                );
+        stubFor(mappingBuilder);
+
+        HashMap<String, String> properties = new HashMap<String, String>(1) {{
+            put("wh_code", "JK01");
+        }};
+        GetAllUniverseAllocationsCommand cmd = new GetAllUniverseAllocationsCommand(
+                provideCircuitBreaker(),
+                provideOkHttpClient(),
+                true,
+                "http://localhost:9393",
+                "user-003",
+                properties
+        );
+
+        List<GetUniverseAllocationResponse> actual = cmd.execute();
+        GetUniverseAllocationResponse alloc = actual.get(0);
+        Assert.assertEquals("user-003", alloc.getUserId());
+        Assert.assertEquals("universe-003", alloc.getUniverseId());
+        Assert.assertEquals("experiment-003", alloc.getExperimentId());
+        Assert.assertEquals("variant-003", alloc.getVariantId());
+        Assert.assertEquals("color", alloc.getConfigs().get(0).get("key"));
+        Assert.assertEquals("red", alloc.getConfigs().get(0).get("value"));
+    }
+
+    @Test
+    public void GetAllUniverseAllocationsCommandWithProperties_Success() {
         stubFor(post(urlEqualTo("/v1/abtest/allocation/user-003"))
                 .willReturn(aResponse()
                         .withStatus(200)
@@ -93,7 +132,8 @@ public class GetAllUniverseAllocationsCommandTest {
                 provideOkHttpClient(),
                 true,
                 "http://localhost:9393",
-                "user-003"
+                "user-003",
+                null
         );
         List<GetUniverseAllocationResponse> actual = cmd.execute();
         GetUniverseAllocationResponse alloc = actual.get(0);

@@ -1,5 +1,6 @@
 package com.sayurbox.kale.abtest.command;
 
+import com.github.tomakehurst.wiremock.client.MappingBuilder;
 import com.github.tomakehurst.wiremock.client.WireMock;
 import com.github.tomakehurst.wiremock.junit.WireMockRule;
 import com.sayurbox.kale.abtest.client.GetUniverseAllocationResponse;
@@ -14,6 +15,7 @@ import org.junit.Test;
 
 import java.io.IOException;
 import java.time.Duration;
+import java.util.HashMap;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
@@ -49,7 +51,8 @@ public class GetUniverseAllocationCommandTest {
                 true,
                 "http://localhost:9393",
                 "user-003",
-                "universe-003"
+                "universe-003",
+                null
         );
         GetUniverseAllocationResponse actual = cmd.execute();
 
@@ -70,7 +73,9 @@ public class GetUniverseAllocationCommandTest {
                 true,
                 "http://localhost:9393",
                 "user-003",
-                "universe-003");
+                "universe-003",
+                null
+        );
         GetUniverseAllocationResponse actual = cmd.execute();
 
         Assert.assertNull(actual);
@@ -92,7 +97,42 @@ public class GetUniverseAllocationCommandTest {
                 true,
                 "http://localhost:9393",
                 "user-003",
-                "universe-003"
+                "universe-003",
+                null
+        );
+        GetUniverseAllocationResponse actual = cmd.execute();
+        Assert.assertEquals("user-003", actual.getUserId());
+        Assert.assertEquals("universe-003", actual.getUniverseId());
+        Assert.assertEquals("experiment-003", actual.getExperimentId());
+        Assert.assertEquals("variant-003", actual.getVariantId());
+        Assert.assertEquals("color", actual.getConfigs().get(0).get("key"));
+        Assert.assertEquals("red", actual.getConfigs().get(0).get("value"));
+    }
+
+    @Test
+    public void GetUniverseAllocationWithPropertiesCommand_Success() {
+        MappingBuilder mappingBuilder = post(urlEqualTo("/v1/abtest/allocation/user-003/universe-003"))
+                .withRequestBody(WireMock.equalToJson("{\"wh_code\":\"JK01\"}"))
+                .willReturn(aResponse()
+                        .withStatus(200)
+                        .withHeader("Content-Type", "application/json")
+                        .withBody("{\"data\":{\"user_id\":\"user-003\",\"universe_id\":\"universe-003\"," +
+                                "\"experiment_id\":\"experiment-003\",\"variant_id\":\"variant-003\"," +
+                                "\"configs\":[{\"key\":\"color\",\"value\":\"red\"}]}}")
+                );
+
+        stubFor(mappingBuilder);
+        HashMap<String, String> properties = new HashMap<String, String>(1) {{
+            put("wh_code", "JK01");
+        }};
+        GetUniverseAllocationCommand cmd = new GetUniverseAllocationCommand(
+                provideCircuitBreaker(),
+                provideOkHttpClient(),
+                true,
+                "http://localhost:9393",
+                "user-003",
+                "universe-003",
+                properties
         );
         GetUniverseAllocationResponse actual = cmd.execute();
         Assert.assertEquals("user-003", actual.getUserId());

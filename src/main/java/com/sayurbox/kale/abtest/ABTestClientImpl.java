@@ -7,6 +7,7 @@ import com.sayurbox.kale.common.KaleClientImpl;
 import com.sayurbox.kale.config.KaleConfig;
 
 import java.util.List;
+import java.util.Map;
 
 public class ABTestClientImpl extends KaleClientImpl implements ABTestClient {
 
@@ -19,7 +20,7 @@ public class ABTestClientImpl extends KaleClientImpl implements ABTestClient {
         GetUniverseAllocationCommand cmd = new GetUniverseAllocationCommand(this.circuitBreaker,
                 this.httpClient, this.kaleConfig.getCircuitBreakerParams().isEnabled(),
                 this.kaleConfig.getBaseUrl(),
-                userId, universeId);
+                userId, universeId, null);
         return cmd.execute();
     }
 
@@ -28,7 +29,26 @@ public class ABTestClientImpl extends KaleClientImpl implements ABTestClient {
         GetAllUniverseAllocationsCommand cmd = new GetAllUniverseAllocationsCommand(this.circuitBreaker,
                 this.httpClient, this.kaleConfig.getCircuitBreakerParams().isEnabled(),
                 this.kaleConfig.getBaseUrl(),
-                userId);
+                userId, null);
         return cmd.execute();
     }
+
+    @Override
+    public List<GetUniverseAllocationResponse> getAllUniverseAllocations(String userId, Map<String, String> properties) {
+        GetAllUniverseAllocationsCommand cmd = new GetAllUniverseAllocationsCommand(this.circuitBreaker,
+                this.httpClient, this.kaleConfig.getCircuitBreakerParams().isEnabled(),
+                this.kaleConfig.getBaseUrl(),
+                userId, properties);
+        return cmd.execute();
+    }
+
+    @Override
+    public GetUniverseAllocationResponse getUniverseAllocation(String userId, String universeId, Map<String, String> properties) {
+        GetUniverseAllocationCommand cmd = new GetUniverseAllocationCommand(this.circuitBreaker,
+                this.httpClient, this.kaleConfig.getCircuitBreakerParams().isEnabled(),
+                this.kaleConfig.getBaseUrl(),
+                userId, universeId, properties);
+        return cmd.execute();
+    }
+
 }

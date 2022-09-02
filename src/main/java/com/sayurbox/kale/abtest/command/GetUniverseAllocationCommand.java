@@ -5,17 +5,24 @@ import com.sayurbox.kale.abtest.client.GetUniverseAllocationResponse;
 import com.sayurbox.kale.common.client.DataResponse;
 import com.sayurbox.kale.common.command.KaleCommand;
 import io.github.resilience4j.circuitbreaker.CircuitBreaker;
+import okhttp3.MediaType;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.RequestBody;
 import okhttp3.Response;
 
 import java.io.IOException;
+import java.lang.reflect.Type;
+import java.util.HashMap;
+import java.util.Map;
 
 public class GetUniverseAllocationCommand extends KaleCommand<GetUniverseAllocationResponse> {
 
     private final String userId;
     private final String universeId;
+    private final Map<String, String> properties;
+    Type propertiesType = new TypeToken<HashMap<String, String>>() {
+    }.getType();
 
     private static final String ENDPOINT = "%s/v1/abtest/allocation/%s/%s";
 
@@ -25,11 +32,13 @@ public class GetUniverseAllocationCommand extends KaleCommand<GetUniverseAllocat
             boolean isCircuitBreakerEnabled,
             String baseUrl,
             String userId,
-            String universeId
+            String universeId,
+            Map<String, String> properties
     ) {
         super(circuitBreaker, okHttpClient, isCircuitBreakerEnabled, baseUrl);
         this.userId = userId;
         this.universeId = universeId;
+        this.properties = properties;
     }
 
     @Override
@@ -40,7 +49,9 @@ public class GetUniverseAllocationCommand extends KaleCommand<GetUniverseAllocat
     @Override
     protected Request createRequest() {
         String url = String.format(ENDPOINT, baseUrl, userId, universeId);
-        return new Request.Builder().post(RequestBody.create(null, new byte[]{})).url(url).build();
+        MediaType contentType = MediaType.parse("application/json");
+
+        return new Request.Builder().post(RequestBody.create(contentType, gson.toJson(properties, propertiesType))).url(url).build();
     }
 
     protected GetUniverseAllocationResponse handleResponse(Response response) throws IOException {
@@ -49,7 +60,8 @@ public class GetUniverseAllocationCommand extends KaleCommand<GetUniverseAllocat
             return getFallback();
         }
         DataResponse<GetUniverseAllocationResponse> t = gson.fromJson(body,
-                new TypeToken<DataResponse<GetUniverseAllocationResponse>>() {}.getType());
+                new TypeToken<DataResponse<GetUniverseAllocationResponse>>() {
+                }.getType());
         return t.getData();
     }
 }
