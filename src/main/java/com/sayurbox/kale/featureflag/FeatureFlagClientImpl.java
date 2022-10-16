@@ -26,5 +26,4 @@ public class FeatureFlagClientImpl extends KaleClientImpl implements FeatureFlag
                 this.kaleConfig.getBaseUrl(), userId, featureName);
         return cmd.execute().getRollout();
     }
-
 }
