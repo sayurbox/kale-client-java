@@ -28,7 +28,7 @@ public class FeatureFlagClientImpl extends KaleClientImpl implements FeatureFlag
     }
 
     @Override
-    boolean isAllocateTest(String featureName, String userId) {
+    public boolean isAllocateTest(String featureName, String userId) {
         return true;
     }
 
