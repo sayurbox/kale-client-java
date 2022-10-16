@@ -26,4 +26,11 @@ public class FeatureFlagClientImpl extends KaleClientImpl implements FeatureFlag
                 this.kaleConfig.getBaseUrl(), userId, featureName);
         return cmd.execute().getRollout();
     }
+
+    @Override
+    boolean isAllocateTest(String featureName, String userId) {
+        return true;
+    }
+
+
 }
