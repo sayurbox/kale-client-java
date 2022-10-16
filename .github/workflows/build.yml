@@ -42,7 +42,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        service_name: []
+        service_name: [svc-1]
     steps:
       - name: Run Test
         run: |
@@ -53,6 +53,10 @@ jobs:
     needs: 
     - build
     - test
+    if: |
+      always() &&
+      needs.build.result == 'success' &&
+      (needs.test.result == 'success' || needs.test.result == 'skipped')
     uses: ./.github/workflows/pr_checker.yml
     with:
       pr_number: ${{ github.event.pull_request.number }}
