@@ -38,6 +38,7 @@ jobs:
   pr_check:
     name: PR check to sonar
     needs: build
+    if: ${{ github.event_name == 'push' }}
     uses: ./.github/workflows/pr_checker.yml
     with:
       pr_number: ${{ github.event.pull_request.number }}
