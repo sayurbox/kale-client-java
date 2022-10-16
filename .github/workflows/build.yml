@@ -42,7 +42,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        service_name: [svc-1, svc-2, svc-3]
+        service_name: []
     steps:
       - name: Run Test
         run: |
