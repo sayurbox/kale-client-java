@@ -27,12 +27,4 @@ public class FeatureFlagClientImpl extends KaleClientImpl implements FeatureFlag
         return cmd.execute().getRollout();
     }
 
-    @Override
-    public boolean isAllocateTest(String featureName, String userId) {
-        if (userId != null) {
-            return true;
-        }
-        return true;
-    }
-
 }

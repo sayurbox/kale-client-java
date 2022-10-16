@@ -6,6 +6,4 @@ public interface FeatureFlagClient {
 
     boolean isAllocateV2(String featureName, String userId);
 
-    boolean isAllocateTest(String featureName, String userId);
-
 }
