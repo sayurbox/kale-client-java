@@ -10,7 +10,7 @@ jobs:
     name: Build
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
         with:
           fetch-depth: 0  # Shallow clones should be disabled for a better relevancy of analysis
       - name: Set up JDK 11
@@ -34,3 +34,12 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}  # Needed to get PR information, if any
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
         run: ./gradlew build jacocoTestReport sonarqube --info
+  
+  pr_check:
+    name: PR check to sonar
+    needs: build
+    uses: ./.github/workflows/pr_check.yml
+    with:
+      pr_number: ${{ github.event.pull_request.number }}
+      action_type: ${{ github.event.type }}
+    secrets: inherit

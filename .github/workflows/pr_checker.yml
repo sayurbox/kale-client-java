@@ -1,0 +1,40 @@
+name: PR Checker
+on:
+    workflow_call:
+      inputs:
+        pr_number:
+          description: Pull request number
+          required: true
+          type: string
+        action_type:
+          description: Action type
+          required: true
+          type: string
+
+env:
+  PR_NUMBER: ${{ inputs.pr_number }}
+  ACTION_TYPE: ${{ inputs.action_type }}
+  
+jobs:
+  pr_check:
+    name: PR Check
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.9.11'
+          cache: 'pip'
+      - name: Pip Install
+        run: pip install requests
+      - name: Run PR Check script
+        run: |
+          ACTION_TYPE=${{ env.ACTION_TYPE }}
+          if [ "$ACTION_TYPE" = "pull_request" ]; then
+            python pr_checker.py ${{ secrets.SONAR_TOKEN }} sayurbox_kale-client-java ${{ env.PR_NUMBER }}
+          else
+            echo Success
+          fi 
