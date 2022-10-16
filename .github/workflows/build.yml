@@ -41,5 +41,5 @@ jobs:
     uses: ./.github/workflows/pr_checker.yml
     with:
       pr_number: ${{ github.event.pull_request.number }}
-      action_type: ${{ github.event.type }}
+      action_type: ${{ github.event_name }}
     secrets: inherit
