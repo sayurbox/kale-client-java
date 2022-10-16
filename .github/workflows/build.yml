@@ -35,10 +35,23 @@ jobs:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
         run: ./gradlew build jacocoTestReport sonarqube --info
   
+  test:
+    needs: 
+    - build
+    strategy:
+      fail-fast: false
+      matrix:
+        service_name: [svc-1, svc-2, svc-3]
+    steps:
+      - name: Run Test
+        run: |
+          echo run test ${{ matrix.service_name }}
+
   pr_check:
     name: PR check to sonar
-    needs: build
-    if: ${{ github.event_name == 'push' }}
+    needs: 
+    - build
+    - test
     uses: ./.github/workflows/pr_checker.yml
     with:
       pr_number: ${{ github.event.pull_request.number }}
