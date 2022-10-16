@@ -35,7 +35,7 @@ jobs:
         run: |
           ACTION_TYPE=${{ env.ACTION_TYPE }}
           if [ "$ACTION_TYPE" = "pull_request" ]; then
-            python pr_checker.py ${{ secrets.SONAR_TOKEN }} sayurbox_kale-client-java ${{ env.PR_NUMBER }}
+            python scripts/pr_checker.py ${{ secrets.SONAR_TOKEN }} sayurbox_kale-client-java ${{ env.PR_NUMBER }}
           else
             echo Success
           fi 
