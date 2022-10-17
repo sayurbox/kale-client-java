@@ -55,11 +55,10 @@ jobs:
     - build
     - test
     if: |
-      always() &&
+      always() && github.event_name == 'pull_request' &&
       needs.build.result == 'success' &&
       (needs.test.result == 'success' || needs.test.result == 'skipped')
     uses: ./.github/workflows/pr_checker.yml
     with:
       pr_number: ${{ github.event.pull_request.number }}
-      action_type: ${{ github.event_name }}
     secrets: inherit

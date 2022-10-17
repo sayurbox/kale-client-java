@@ -6,14 +6,9 @@ on:
           description: Pull request number
           required: true
           type: string
-        action_type:
-          description: Action type
-          required: true
-          type: string
 
 env:
   PR_NUMBER: ${{ inputs.pr_number }}
-  ACTION_TYPE: ${{ inputs.action_type }}
   
 jobs:
   pr_check:
@@ -34,9 +29,4 @@ jobs:
         run: pip install -r requirements.txt
       - name: Run PR Check script
         run: |
-          ACTION_TYPE=${{ env.ACTION_TYPE }}
-          if [ "$ACTION_TYPE" = "pull_request" ]; then
-            python scripts/pr_checker.py ${{ secrets.SONAR_TOKEN }} sayurbox_kale-client-java ${{ env.PR_NUMBER }}
-          else
-            echo Success
-          fi 
+          python scripts/pr_checker.py ${{ secrets.SONAR_TOKEN }} sayurbox_kale-client-java ${{ env.PR_NUMBER }} 
