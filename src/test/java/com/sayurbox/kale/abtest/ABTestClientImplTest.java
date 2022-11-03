@@ -12,6 +12,7 @@ import org.junit.Test;
 
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import static com.github.tomakehurst.wiremock.client.WireMock.aResponse;
 import static com.github.tomakehurst.wiremock.client.WireMock.post;
@@ -65,6 +66,82 @@ public class ABTestClientImplTest {
                 ));
         GetUniverseAllocationResponse actual = abTestClient.getUniverseAllocation(
                 "user-003", "universe-003"
+        );
+
+        Assert.assertNull(actual);
+    }
+
+    @Test
+    public void getUniverseAllocationByName_Success() {
+        stubFor(post(urlEqualTo("/v2/abtest/allocation/user-003/universe-003"))
+                .willReturn(aResponse()
+                        .withStatus(200)
+                        .withHeader("Content-Type", "application/json")
+                        .withBody("{\"data\":{\"user_id\":\"user-003\",\"universe_id\":\"universe-003\"," +
+                                "\"experiment_id\":\"experiment-003\",\"variant_id\":\"variant-003\"," +
+                                "\"configs\":[{\"key\":\"color\",\"value\":\"red\"}]}}")
+                ));
+        GetUniverseAllocationResponse actual = abTestClient.getUniverseAllocationByName(
+                "user-003", "universe-003"
+        );
+
+        Assert.assertEquals("user-003", actual.getUserId());
+        Assert.assertEquals("universe-003", actual.getUniverseId());
+        Assert.assertEquals("experiment-003", actual.getExperimentId());
+        Assert.assertEquals("variant-003", actual.getVariantId());
+        Assert.assertEquals("color", actual.getConfigs().get(0).get("key"));
+        Assert.assertEquals("red", actual.getConfigs().get(0).get("value"));
+    }
+
+    @Test
+    public void getUniverseAllocationByName_HasErrorResponse() {
+        stubFor(post(urlEqualTo("/v2/abtest/allocation/user-003/universe-003"))
+                .willReturn(aResponse()
+                        .withStatus(400)
+                        .withHeader("Content-Type", "application/json")
+                        .withBody("{\"error\":{\"code\":1234,\"message\":\"just error\",\"type\":\"TestError\"}}")
+                ));
+        GetUniverseAllocationResponse actual = abTestClient.getUniverseAllocationByName(
+                "user-003", "universe-003"
+        );
+
+        Assert.assertNull(actual);
+    }
+
+    @Test
+    public void getUniverseAllocationByNameWithProperties_Success() {
+        stubFor(post(urlEqualTo("/v2/abtest/allocation/user-003/universe-003"))
+                .willReturn(aResponse()
+                        .withStatus(200)
+                        .withHeader("Content-Type", "application/json")
+                        .withBody("{\"data\":{\"user_id\":\"user-003\",\"universe_id\":\"universe-003\"," +
+                                "\"experiment_id\":\"experiment-003\",\"variant_id\":\"variant-003\"," +
+                                "\"configs\":[{\"key\":\"color\",\"value\":\"red\"}]}}")
+                ));
+        Map<String, String> properties = new HashMap<>();
+        properties.put("warehouseCode", "JK01");
+        GetUniverseAllocationResponse actual = abTestClient.getUniverseAllocationByName(
+                "user-003", "universe-003", properties
+        );
+
+        Assert.assertEquals("user-003", actual.getUserId());
+        Assert.assertEquals("universe-003", actual.getUniverseId());
+        Assert.assertEquals("experiment-003", actual.getExperimentId());
+        Assert.assertEquals("variant-003", actual.getVariantId());
+        Assert.assertEquals("color", actual.getConfigs().get(0).get("key"));
+        Assert.assertEquals("red", actual.getConfigs().get(0).get("value"));
+    }
+
+    @Test
+    public void getUniverseAllocationByNameWithProperties_HasErrorResponse() {
+        stubFor(post(urlEqualTo("/v2/abtest/allocation/user-003/universe-003"))
+                .willReturn(aResponse()
+                        .withStatus(400)
+                        .withHeader("Content-Type", "application/json")
+                        .withBody("{\"error\":{\"code\":1234,\"message\":\"just error\",\"type\":\"TestError\"}}")
+                ));
+        GetUniverseAllocationResponse actual = abTestClient.getUniverseAllocationByName(
+                "user-003", "universe-003", new HashMap<>()
         );
 
         Assert.assertNull(actual);
