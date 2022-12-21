@@ -1,0 +1,32 @@
+name: PR Checker
+on:
+    workflow_call:
+      inputs:
+        pr_number:
+          description: Pull request number
+          required: true
+          type: string
+
+env:
+  PR_NUMBER: ${{ inputs.pr_number }}
+  
+jobs:
+  pr_check:
+    name: PR Check
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+      - name: Create requirements file
+        run: echo requests==2.28.1 > requirements.txt
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.9.11'
+          cache: 'pip'
+      - name: Pip Install
+        run: pip install -r requirements.txt
+      - name: Run PR Check script
+        run: |
+          python scripts/pr_checker.py ${{ secrets.SONAR_TOKEN }} sayurbox_kale-client-java ${{ env.PR_NUMBER }} 

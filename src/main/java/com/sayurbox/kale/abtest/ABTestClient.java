@@ -1,9 +1,9 @@
 package com.sayurbox.kale.abtest;
 
 import com.sayurbox.kale.abtest.client.GetUniverseAllocationResponse;
-
 import java.util.List;
 import java.util.Map;
+
 
 public interface ABTestClient {
 
@@ -14,4 +14,8 @@ public interface ABTestClient {
     List<GetUniverseAllocationResponse> getAllUniverseAllocations(String userId, Map<String, String> properties);
 
     GetUniverseAllocationResponse getUniverseAllocation(String userId, String universeId, Map<String, String> properties);
+
+    GetUniverseAllocationResponse getUniverseAllocationByName(String userId, String universeName);
+
+    GetUniverseAllocationResponse getUniverseAllocationByName(String userId, String universeName, Map<String, String> properties);
 }
