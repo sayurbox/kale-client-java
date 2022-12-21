@@ -24,6 +24,7 @@ public class FeatureFlagClientImpl extends KaleClientImpl implements FeatureFlag
         GetAllocateCommandV2 cmd = new GetAllocateCommandV2(this.circuitBreaker,
                 this.httpClient, this.kaleConfig.getCircuitBreakerParams().isEnabled(),
                 this.kaleConfig.getBaseUrl(), userId, featureName);
+        // fake changes
         return cmd.execute().getRollout();
     }
     
