@@ -32,7 +32,7 @@ jobs:
       - name: Build and analyze
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}  # Needed to get PR information, if any
-          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+          SONAR_TOKEN: ${{ secrets.KALE_SONAR_TOKEN }}
         run: ./gradlew build jacocoTestReport sonarqube --info
 
   pr_check:
@@ -41,8 +41,7 @@ jobs:
     - build
     if: |
       always() && github.event_name == 'pull_request' &&
-      needs.build.result == 'success' &&
-      (needs.test.result == 'success' || needs.test.result == 'skipped')
+      (needs.build.result == 'success' || needs.build.result == 'skipped')
     uses: ./.github/workflows/pr_checker.yml
     with:
       pr_number: ${{ github.event.pull_request.number }}
