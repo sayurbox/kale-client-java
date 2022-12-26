@@ -9,6 +9,7 @@ on:
 
 env:
   PR_NUMBER: ${{ inputs.pr_number }}
+  SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
   
 jobs:
   pr_check:
@@ -29,4 +30,4 @@ jobs:
         run: pip install -r requirements.txt
       - name: Run PR Check script
         run: |
-          python scripts/pr_checker.py ${{ secrets.SONAR_TOKEN }} sayurbox_kale-client-java ${{ env.PR_NUMBER }} 
+          python scripts/pr_checker.py sayurbox_kale-client-java ${{ env.PR_NUMBER }} 
