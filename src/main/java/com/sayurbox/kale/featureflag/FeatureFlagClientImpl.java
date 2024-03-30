@@ -14,7 +14,7 @@ public class FeatureFlagClientImpl extends KaleClientImpl implements FeatureFlag
     @Override
     public boolean isAllocate(String featureId, String userId) {
         GetAllocateCommand cmd = new GetAllocateCommand(this.circuitBreaker,
-                this.httpClient, this.kaleConfig.getCircuitBreakerParams().isEnabled(),
+                this.httpClient, this.kaleConfig.getCircuitBreakerParams().enabled(),
                 this.kaleConfig.getBaseUrl(), userId, featureId);
         return cmd.execute().getRollout();
     }
@@ -22,7 +22,7 @@ public class FeatureFlagClientImpl extends KaleClientImpl implements FeatureFlag
     @Override
     public boolean isAllocateV2(String featureName, String userId) {
         GetAllocateCommandV2 cmd = new GetAllocateCommandV2(this.circuitBreaker,
-                this.httpClient, this.kaleConfig.getCircuitBreakerParams().isEnabled(),
+                this.httpClient, this.kaleConfig.getCircuitBreakerParams().enabled(),
                 this.kaleConfig.getBaseUrl(), userId, featureName);
         return cmd.execute().getRollout();
     }

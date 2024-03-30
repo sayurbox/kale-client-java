@@ -46,6 +46,7 @@ public class KaleConfig {
         private Integer waitDuration = 20000;
 
         public Builder() {
+            // No args constructor
         }
 
         public Builder withBaseUrl(String url) {

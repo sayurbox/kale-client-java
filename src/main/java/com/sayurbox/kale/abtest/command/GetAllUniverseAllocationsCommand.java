@@ -48,15 +48,17 @@ public class GetAllUniverseAllocationsCommand extends KaleCommand<List<GetUniver
     protected Request createRequest() {
         String url = String.format(ENDPOINT, baseUrl, userId);
         MediaType contentType = MediaType.parse("application/json");
+        RequestBody body = RequestBody.create(gson.toJson(properties, propertiesType), contentType);
 
-        return new Request.Builder().post(RequestBody.create(contentType, gson.toJson(properties, propertiesType))).url(url).build();
+        return new Request.Builder().post(body).url(url).build();
     }
 
     protected List<GetUniverseAllocationResponse> handleResponse(Response response) throws IOException {
-        String body = response.body().string();
-        if (!response.isSuccessful()) {
+        if (response.body() == null || !response.isSuccessful()) {
             return getFallback();
         }
+
+        String body = response.body().string();
         DataResponse<List<GetUniverseAllocationResponse>> t = gson.fromJson(body,
                 new TypeToken<DataResponse<List<GetUniverseAllocationResponse>>>() {
                 }.getType());
