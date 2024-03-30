@@ -38,13 +38,13 @@ public abstract class KaleCommand<T> {
 
     protected T run() {
         Response response = null;
+        Request request = createRequest();
+
         try {
-            Request request = createRequest();
-            logger.info("requesting kale: {}", request.url());
             response = okHttpClient.newCall(request).execute();
             return handleResponse(response);
         } catch (Exception e) {
-            logger.error("failed request from kale, ", e);
+            logger.error("failed request {} from kale, ", request.url(), e);
             return getFallback();
         } finally {
             if (response != null && response.body() != null) {
