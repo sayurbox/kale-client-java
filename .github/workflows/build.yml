@@ -34,7 +34,7 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}  # Needed to get PR information, if any
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
-        run: ./gradlew build jacocoTestReport sonar --info
+        run: ./gradlew build jacocoTestReport sonar -x compileJava -x compileTestJava --info
 
   pr_check:
     name: PR check to sonar
