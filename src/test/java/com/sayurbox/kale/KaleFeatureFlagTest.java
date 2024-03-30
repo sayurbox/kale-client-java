@@ -5,14 +5,18 @@ import com.github.tomakehurst.wiremock.junit.WireMockRule;
 import com.sayurbox.kale.config.KaleConfig;
 import com.sayurbox.kale.featureflag.FeatureFlagClient;
 import com.sayurbox.kale.featureflag.FeatureFlagClientImpl;
+import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
+
+import java.util.concurrent.TimeUnit;
 
 import static com.github.tomakehurst.wiremock.client.WireMock.aResponse;
 import static com.github.tomakehurst.wiremock.client.WireMock.get;
 import static com.github.tomakehurst.wiremock.client.WireMock.stubFor;
 import static com.github.tomakehurst.wiremock.client.WireMock.urlEqualTo;
+import static org.awaitility.Awaitility.await;
 
 // End-to-end test
 public class KaleFeatureFlagTest {
@@ -57,20 +61,14 @@ public class KaleFeatureFlagTest {
                 System.out.println("user is not allocated");
             }
         }
-        try {
-            // sleep to simulate circuit breaker waiting for open state
-            Thread.sleep(6_000);
-        } catch (InterruptedException e) {
-        }
+
+        // sleep to simulate circuit breaker waiting for open state
+        await().atMost(6_000, TimeUnit.MILLISECONDS);
 
         System.out.println("\n\nSecond batch:");
         for (int i = 1; i <= 20; i++) {
             boolean isAllocate = ff.isAllocate(featureId, userId);
-            if (isAllocate) {
-                System.out.println("user is allocated");
-            } else {
-                System.out.println("user is not allocated");
-            }
+            Assert.assertFalse(isAllocate);
         }
     }
 
@@ -106,20 +104,14 @@ public class KaleFeatureFlagTest {
                 System.out.println("user is not allocated");
             }
         }
-        try {
-            // sleep to simulate circuit breaker waiting for open state
-            Thread.sleep(6_000);
-        } catch (InterruptedException e) {
-        }
+
+        // sleep to simulate circuit breaker waiting for open state
+        await().atMost(6_000, TimeUnit.MILLISECONDS);
 
         System.out.println("\n\nSecond batch:");
         for (int i = 1; i <= 20; i++) {
             boolean isAllocate = ff.isAllocateV2(featureName, userId);
-            if (isAllocate) {
-                System.out.println("user is allocated");
-            } else {
-                System.out.println("user is not allocated");
-            }
+            Assert.assertFalse(isAllocate);
         }
     }
 }
