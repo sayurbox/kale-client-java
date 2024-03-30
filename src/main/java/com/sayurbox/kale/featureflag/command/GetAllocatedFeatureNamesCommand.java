@@ -46,6 +46,7 @@ public class GetAllocatedFeatureNamesCommand extends KaleCommand<GetAllocatedFea
         String body = response.body().string();
         if (!response.isSuccessful()) {
             logger.error("Failed response from kale status: {} body: {}", response.code(), body);
+            return getFallback();
         }
 
         DataResponse<GetAllocatedFeaturesResponse> t = this.gson.fromJson(body,
