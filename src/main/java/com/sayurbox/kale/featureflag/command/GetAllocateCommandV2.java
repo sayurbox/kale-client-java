@@ -46,11 +46,17 @@ public class GetAllocateCommandV2 extends KaleCommand<GetAllocateResponse> {
     }
 
     protected GetAllocateResponse handleResponse(Response response) throws IOException {
+        if (response.body() == null) {
+            logger.error("Failed response from kale status: {}", response.code());
+            return getFallback();
+        }
+
         String body = response.body().string();
         if (!response.isSuccessful()) {
             logger.error("Failed response from kale status: {} body: {}", response.code(), body);
             return getFallback();
         }
+
         DataResponse<GetAllocateResponse> t = this.gson.fromJson(body,
                new TypeToken<DataResponse<GetAllocateResponse>>() {}.getType());
         return t.getData();

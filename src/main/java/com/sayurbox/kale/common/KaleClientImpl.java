@@ -37,12 +37,12 @@ public abstract class KaleClientImpl {
 
         CircuitBreakerConfig circuitBreakerConfig = CircuitBreakerConfig.custom()
                 .slidingWindowType(CircuitBreakerConfig.SlidingWindowType.COUNT_BASED)
-                .slidingWindowSize(circuitBreakerParams.getSlidingWindowSize())
+                .slidingWindowSize(circuitBreakerParams.slidingWindowSize())
                 .slowCallRateThreshold(70.0f)
                 .slowCallDurationThreshold(Duration.ofMillis(
-                        circuitBreakerParams.getSlowCallDurationThreshold()))
+                        circuitBreakerParams.slowCallDurationThreshold()))
                 .waitDurationInOpenState(Duration.ofMillis(
-                        circuitBreakerParams.getWaitDurationInOpenState()))
+                        circuitBreakerParams.waitDurationInOpenState()))
                 .recordExceptions(IOException.class, TimeoutException.class)
                 .build();
 
