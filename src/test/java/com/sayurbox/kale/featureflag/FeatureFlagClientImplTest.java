@@ -8,6 +8,8 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 
+import java.util.Set;
+
 import static com.github.tomakehurst.wiremock.client.WireMock.aResponse;
 import static com.github.tomakehurst.wiremock.client.WireMock.get;
 import static com.github.tomakehurst.wiremock.client.WireMock.stubFor;
@@ -102,4 +104,40 @@ public class FeatureFlagClientImplTest {
         Assert.assertFalse(actual);
     }
 
+    @Test
+    public void getAllocatedFeatureNames_HasList() {
+        stubFor(get(urlEqualTo("/v2/featureflag/allocation/user-003"))
+                .willReturn(aResponse()
+                        .withStatus(200)
+                        .withHeader("Content-Type", "application/json")
+                        .withBody("{\"data\":{\"features\":[{\"feature_id\":\"053e06de-a3d5-4b19-8ff5-346fb3aed8d7\"," +
+                                "\"feature_name\":\"www-quick-checkout-navbar-v2\"}]}}")
+                ));
+        Set<String> actual = featureFlagClient.getAllocatedFeatureNames("user-003");
+        Assert.assertFalse(actual.isEmpty());
+    }
+
+    @Test
+    public void getAllocatedFeatureNames_NoList() {
+        stubFor(get(urlEqualTo("/v2/featureflag/allocation/user-003"))
+                .willReturn(aResponse()
+                        .withStatus(200)
+                        .withHeader("Content-Type", "application/json")
+                        .withBody("{\"data\":{\"features\":[]}}")
+                ));
+        Set<String> actual = featureFlagClient.getAllocatedFeatureNames("user-003");
+        Assert.assertTrue(actual.isEmpty());
+    }
+
+    @Test
+    public void getAllocatedFeatureNames_HasErrorResponse() {
+        stubFor(get(urlEqualTo("/v2/featureflag/allocation/user-003"))
+                .willReturn(aResponse()
+                        .withStatus(400)
+                        .withHeader("Content-Type", "application/json")
+                        .withBody("{\"error\":{\"code\":1234,\"message\":\"just error\",\"type\":\"TestError\"}}")
+                ));
+        Set<String> actual = featureFlagClient.getAllocatedFeatureNames("user-003");
+        Assert.assertTrue(actual.isEmpty());
+    }
 }
