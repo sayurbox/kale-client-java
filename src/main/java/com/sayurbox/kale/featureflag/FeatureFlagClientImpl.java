@@ -35,7 +35,7 @@ public class FeatureFlagClientImpl extends KaleClientImpl implements FeatureFlag
     @Override
     public Set<String> getAllocatedFeatureNames(String userId) {
         GetAllocatedFeatureNamesCommand cmd = new GetAllocatedFeatureNamesCommand(circuitBreaker,
-                this.httpClient, this.kaleConfig.getCircuitBreakerParams().isEnabled(),
+                this.httpClient, this.kaleConfig.getCircuitBreakerParams().enabled(),
                 this.kaleConfig.getBaseUrl(), userId);
         return cmd.execute().getFeatures()
                 .stream()
